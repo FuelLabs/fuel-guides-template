@@ -1,6 +1,9 @@
 /* eslint-disable import/no-named-default */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import { DEFAULT_SLUG } from '~/src/constants';
+
+
 import {
   default as DocPage,
   getStaticProps as docsGetStaticProps,
@@ -11,5 +14,5 @@ export default function Home(props: any) {
 }
 
 export async function getStaticProps() {
-  return docsGetStaticProps({ params: { slug: ['overview'] } });
+  return docsGetStaticProps({ params: { slug: DEFAULT_SLUG } });
 }

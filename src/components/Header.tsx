@@ -7,6 +7,9 @@ import { usePathname } from 'next/navigation';
 import { MobileMenu } from './MobileMenu';
 import { Search } from './Search';
 
+import { HEADER_TITLE } from '~/src/constants';
+
+
 export function Header() {
   const pathname = usePathname();
   const isDocsActive = pathname?.startsWith('/docs');
@@ -18,7 +21,7 @@ export function Header() {
           {/* <FuelLogo size={40} /> */}
           <Image alt="Fuel Logo" src="/Fuel_Logo.png" height={30} width={30} />
           <Flex css={styles.logoText}>
-            <span>Fuel GraphQL Docs</span>
+            <span>{HEADER_TITLE}</span>
             {/* <Box as="span" css={styles.version}>
               alpha
             </Box> */}

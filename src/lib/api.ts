@@ -10,25 +10,9 @@ import { codeImport } from './code-import';
 import { codeExamples } from './code-examples';
 import { rehypeExtractHeadings } from './toc';
 
-import { DOCS_REPO_LINK, FIELDS } from '~/src/constants';
+import { DOCS_REPO_LINK, FIELDS, SUB_MENU_ORDER, DOCS_DIRECTORY, MENU_ORDER, LABELS } from '~/src/constants';
 import type { DocType, NodeHeading, SidebarLinkItem } from '~/src/types';
 
-const DOCS_DIRECTORY = join(process.cwd(), './docs');
-
-const REFERENCE_MENU_ORDER = [
-  'Scalars',
-  'Enums',
-  'Unions',
-  'Objects',
-  'Queries',
-  'Mutations',
-  'Subscriptions'
-]
-
-const HOW_TO_USE_GRAPHQL_ORDER = [
-  'What is GraphQL?',
-  'Schema & Type System'
-]
 
 export async function getDocsSlugs() {
   const paths = await globby(['**.mdx']);
@@ -46,6 +30,8 @@ export async function getDocBySlug(
 ): Promise<DocType> {
   const realSlug = slug.replace(/\.mdx$/, '');
   const fullpath = getDocFullPath(slug);
+  console.log(fullpath);
+
   const fileContents = fs.readFileSync(fullpath, 'utf8');
   const { data, content } = matter(fileContents);
   const tempPageLink = join(
@@ -53,7 +39,7 @@ export async function getDocBySlug(
     fullpath.replace(process.cwd(), '')
   ).replace('https:/', 'https://');
 
-  let pageLink = tempPageLink.replace("/docs/","/blob/main/docs/")
+  let pageLink = tempPageLink.replace("/docs/", "/blob/main/docs/")
 
   const doc = {
     pageLink,
@@ -105,7 +91,7 @@ export async function getSidebarLinks(order: string[]) {
     if (!doc.category) {
       return list.concat({ slug: doc.slug, label: doc.title });
     }
-    
+
     const categoryIdx = list.findIndex((l) => {
       return l?.label === doc.category
     });
@@ -125,6 +111,8 @@ export async function getSidebarLinks(order: string[]) {
     /** Insert inside category submenu if category is already on array */
   }, [] as SidebarLinkItem[]);
 
+  // TODO: how to order dynamically
+
   const sortedLinks = links
     /** Sort first level links */
     .sort((a, b) => {
@@ -143,16 +131,17 @@ export async function getSidebarLinks(order: string[]) {
       const idx = order.indexOf(first);
       return a.subpath ? idx - bIdx : aIdx - idx;
     })
-    /** Sort categoried links */
+    // /** Sort categoried links */
     .map((link) => {
       if (!link.submenu) return link;
-      const catOrder = link.label == "Reference" ? REFERENCE_MENU_ORDER : HOW_TO_USE_GRAPHQL_ORDER
+      // TODO:  refactor to use a switch approach where handleOrder[link.label]
+      const catOrder = link.label == LABELS.REFERENCE ? SUB_MENU_ORDER.REFERENCE : SUB_MENU_ORDER.HOW_TO_USE_GRAPHQL
       const submenu = link.submenu
-      .sort(
-        (a, b) => {
-        return catOrder.indexOf(`${a.label}`) - catOrder.indexOf(`${b.label}`)
-        }
-      );
+        .sort(
+          (a, b) => {
+            return catOrder.indexOf(`${a.label}`) - catOrder.indexOf(`${b.label}`)
+          }
+        );
       return { ...link, submenu };
     });
 
