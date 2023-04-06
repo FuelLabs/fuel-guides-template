@@ -11,15 +11,14 @@ function convert_guide_to_mdx() {
 echo $PWD
   local input_file="$1"
   local guide_folder="$2"
-  local output_dir="./docs"
-  local output_constants_dir="./src/generatedConstants"
+  local output_dir="$guide_folder/docs"
+  local output_constants_dir="$guide_folder/src/generatedConstants"
   local filenames=()
   local headings=()
 
   # Change directory to the guide folder
   echo "Input file: $input_file"
   echo "Guide folder: $guide_folder"
-  cd "$guide_folder" || exit 1
 
   # Create the output directory if it doesn't exist
   if [ -d "$output_dir" ]; then
