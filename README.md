@@ -1,10 +1,9 @@
 # Fuel-guides-template
 		# run from parent
 		chmod +x ./guide/generate-docs.sh
-		./guide/generate-docs.sh ./GUIDE.MD ./guide		
+		./guide/generate-docs.sh ./README.md ./guide		
 
-		➜  learnsway-marketplace git:(main) ✗ chmod +x ./guide/generate-docs.sh
-                ./guide/generate-docs.sh ./README.md ./guide
+		
 
 TODO: add desc for generate-docs
 
