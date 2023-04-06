@@ -1,21 +1,25 @@
 #!/bin/bash
 
-#!/bin/bash
-
-# Check if an input file name was provided
-if [ -z "$1" ]; then
-  echo "Error: No input file name provided."
+# Check if an input file name and guide folder path were provided
+if [ -z "$1" ] || [ -z "$2" ]; then
+  echo "Error: No input file name or guide folder path provided."
   exit 1
 fi
 
 # Function to convert a GUIDE.md file to MDX files
 function convert_guide_to_mdx() {
+echo $PWD
   local input_file="$1"
+  local guide_folder="$2"
   local output_dir="./docs"
   local output_constants_dir="./src/generatedConstants"
   local filenames=()
   local headings=()
 
+  # Change directory to the guide folder
+  echo "Input file: $input_file"
+  echo "Guide folder: $guide_folder"
+  cd "$guide_folder" || exit 1
 
   # Create the output directory if it doesn't exist
   if [ -d "$output_dir" ]; then
@@ -73,5 +77,4 @@ function convert_guide_to_mdx() {
 }
 
 # Call the function with the input file name
-input_file="$1"
-convert_guide_to_mdx "$input_file"
+convert_guide_to_mdx $1 $2
