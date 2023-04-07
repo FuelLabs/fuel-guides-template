@@ -4,15 +4,8 @@ import filenames from './generatedConstants/filenames.json'
 import headings from './generatedConstants/headings.json'
 
 export const MENU_ORDER = headings
-// export const MENU_ORDER = [
-//   "Intro to Sway for JS Dev"
-// ]
-console.log("headings type", typeof MENU_ORDER);
-console.log("headings ", MENU_ORDER);
 
-
-export const HEADER_TITLE = "Proof of concept"
-
+export const HEADER_TITLE = headings[0]
 
 const URL = "https://graphql-docs.fuel.network/"
 
@@ -22,7 +15,7 @@ export const DOCS_REPO_LINK = REPO_LINK;
 
 // TODO: Dynamic this
 export const DEFAULT_SLUG = [filenames[0]];
-console.log(DEFAULT_SLUG);
+// console.log(DEFAULT_SLUG);
 
 
 export const DOCS_DIRECTORY = join(process.cwd(), './docs');

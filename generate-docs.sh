@@ -34,7 +34,7 @@ function convert_guide_to_mdx() {
       heading_text=$(echo "$raw_heading_text" | sed -E 's/^#+\s*//;s/\s*$//')
 
       # Get the root filename without extension
-      root_filename=$(echo "$heading_text" | tr '[:upper:]' '[:lower:]' | sed 's/^ *//;s/ *$//;s/ /-/g')
+      root_filename=$(echo "$heading_text" | tr -cs '[:alpha:]' '-' | sed 's/^-+\|-+$//g; s/-+/-/g; s/^ *//; s/ *$//; s/ /-/g' | tr '[:upper:]' '[:lower:]')
 
       # Add the root filename to the filenames list
       filenames+=("$root_filename")
