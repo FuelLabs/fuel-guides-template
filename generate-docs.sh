@@ -1,8 +1,10 @@
 #!/bin/bash
 
+# TODO: prettier logs
+
 # Check if an input file name and guide folder path were provided
 if [ -z "$1" ]; then
-  echo "Error: No input file name or guide folder path provided."
+  echo "Error: No input file path provided."
   exit 1
 fi
 
@@ -27,14 +29,19 @@ function convert_guide_to_mdx() {
   while read line; do
     # If the line starts with a heading and not with #[storage, create a new output file
     if [[ $line =~ ^# && ! $line =~ ^#\[(storage|STORAGE) ]]; then
-      # Get the raw text of the heading and remove any leading/trailing whitespace
-      raw_heading_text=$(echo "$line" | sed -E 's/^[[:space:]]*//;s/[[:space:]]*$//')
+
+      # Just for readability
+      raw_heading_text=$line
+      echo "raw_heading_text: [$raw_heading_text]"
 
       # Get the text of the heading without the '#' characters and remove any leading/trailing whitespace
-      heading_text=$(echo "$raw_heading_text" | sed -E 's/^#+\s*//;s/\s*$//')
+      heading_text=$(echo "$raw_heading_text" | sed -E 's/^#+\s*//; s/^ +//')
+      echo "   heading_text: [$heading_text]"
 
-      # Get the root filename without extension
-      root_filename=$(echo "$heading_text" | tr -cs '[:alpha:]' '-' | sed 's/^-+\|-+$//g; s/-+/-/g; s/^ *//; s/ *$//; s/ /-/g' | tr '[:upper:]' '[:lower:]')
+      # Removes non alphabetical, replaces spaces with hyphens, sets all to lowercase
+      root_filename=$(echo "$heading_text" | sed -E 's/[^[:alpha:] ]//g; s/[[:space:]]+/-/g' | tr '[:upper:]' '[:lower:]')
+      echo "   root_filename: [$root_filename]"
+
 
       # Add the root filename to the filenames list
       filenames+=("$root_filename")
