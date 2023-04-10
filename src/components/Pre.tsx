@@ -16,7 +16,9 @@ export function Pre({ children, title }: PreProps) {
   const codeEl: any = Children.toArray(children)[0];
   const codeStr = codeEl?.props.children || '';
   const code = codeStr.endsWith('\n') ? codeStr.slice(0, -1) : codeStr;
-  const language = codeEl?.props.className.replace('language-', '');
+  // FIXME: this crashes on "testing contract"
+  const language = codeEl?.props.className ? codeEl?.props.className.replace('language-', '') : "bash"
+
 
   return (
     <Box css={styles.root}>

@@ -15,7 +15,6 @@ export const DOCS_REPO_LINK = REPO_LINK;
 
 // TODO: Dynamic this
 export const DEFAULT_SLUG = [filenames[0]];
-// console.log(DEFAULT_SLUG);
 
 
 export const DOCS_DIRECTORY = join(process.cwd(), './docs');
