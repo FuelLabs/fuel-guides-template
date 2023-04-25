@@ -30,7 +30,6 @@ export async function getDocBySlug(
 ): Promise<DocType> {
   const realSlug = slug.replace(/\.mdx$/, '');
   const fullpath = getDocFullPath(slug);
-
   const fileContents = fs.readFileSync(fullpath, 'utf8');
   const { data, content } = matter(fileContents);
   const tempPageLink = join(

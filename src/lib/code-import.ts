@@ -7,9 +7,9 @@ import { EOL } from 'os';
 import path from 'path';
 import * as prettier from 'prettier';
 import type { Root } from 'remark-gfm';
-import { visit } from 'unist-util-visit';
-import type { Parent } from 'unist-util-visit';
+import { visit, Parent } from 'unist-util-visit';
 
+// FIXME: use dynamic imports:: implemented as ~/*
 const ROOT_DIR = path.resolve(__dirname, '../../../../../../../');
 
 function toAST(content: string) {
@@ -34,6 +34,7 @@ function extractLines(
   } else {
     end = lines.length;
   }
+  // TODO: Prettify return prettier.format(linesContent, { parser: 'babel-ts' }).trimEnd();
   return lines.slice(start - 1, end).join('\n');
 }
 
@@ -115,18 +116,19 @@ export function codeImport(options: Options = { filepath: '' }) {
         throw new Error('CodeImport need to have properties defined');
       }
 
+      // FIXME: Improve undef handling
+
+      let lineStart = attr.find((i: any) => i.name === 'lineStart')?.value;
+      let lineEnd = attr.find((i: any) => i.name === 'lineEnd')?.value;
       const file = attr.find((i: any) => i.name === 'file')?.value;
-      const lines = attr.find((i: any) => i.name === 'lines')?.value || [];
       const testCase = attr.find((i: any) => i.name === 'testCase')?.value;
       const fileAbsPath = path.resolve(path.join(rootDir, dirname), file);
-      let [lineStart, lineEnd] = lines as any[];
       const fileContent = fs.readFileSync(fileAbsPath, 'utf8');
       const cachedFile = getFilesOnCache(fileAbsPath);
-      const attrId = `${fileAbsPath}${testCase || ''}${lineStart || ''}${
-        lineEnd || ''
-      }`;
+      const attrId = `${fileAbsPath}${testCase || ''}${lineStart || ''}${lineEnd || ''}`;
       const oldList = attrsList.get(attrId);
 
+      // FIXME: test cache earlier
       /** Return result from cache if file content is the same */
       if (fileContent === cachedFile && oldList) {
         node.attributes.push(...attrsList.get(attrId)!);
