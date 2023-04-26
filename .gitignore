@@ -37,4 +37,4 @@ next-env.d.ts
 
 /docs/
 /examples/
-/generatedConstants/
+/src/generatedConstants/

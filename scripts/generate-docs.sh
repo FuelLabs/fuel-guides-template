@@ -12,11 +12,18 @@ fi
 function convert_guide_to_mdx() {
   local input_file="$1"
   local examples_input_dir="$2"
+  local output_readme_file="$3"
   local docs_dir="./docs"
   local examples_dir="./examples"
   local output_constants_dir="./src/generatedConstants"
   local filenames=()
   local headings=()
+
+  # Create the output_readme_file if it doesn't exist
+  if [ -f "$output_readme_file" ]; then
+    rm -rf "$output_readme_file"
+  fi
+  touch -p "$output_readme_file"
 
   # Create the docs output directory if it doesn't exist
   if [ -d "$docs_dir" ]; then
@@ -85,17 +92,15 @@ function convert_guide_to_mdx() {
         # when it should be global import file="@examples/package.json"
 
         # Use sed to extract the section
-        # section=$(sed -n "${start_line},${end_line}p" "${example_path}")
+        section=$(sed -n "${start_line},${end_line}p" "${example_path}")
 
         # Print the extracted section
         # TODO: this goes to summarized readme
         # echo "   ${section}"
-        # quotes="\`\`\`"
-        # echo "$quotes" >> "$output_file"
-        # echo "$section" >> "$output_file"
-        # echo "$quotes" >> "$output_file"
-        # echo "```" >> "$output_file"
-        # echo "$quotes" 
+        quotes="\`\`\`"
+        echo "$quotes" >> "$output_readme_file"
+        echo "$section" >> "$output_readme_file"
+        echo "$quotes" >> "$output_readme_file"
         
 
       else
@@ -104,6 +109,7 @@ function convert_guide_to_mdx() {
       
     else
       # Write the current line to the current output file
+      echo "$line" >> "$output_readme_file"
       echo "$line" >> "$output_file"
     fi
   done < "$input_file"
@@ -126,4 +132,4 @@ function convert_guide_to_mdx() {
 }
 
 # Call the function with the input file name
-convert_guide_to_mdx $1 $2
+convert_guide_to_mdx $1 $2 $3
