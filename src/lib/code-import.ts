@@ -165,7 +165,7 @@ export function codeImport(options: Options = { filepath: '' }) {
         {
           name: '__language',
           type: 'mdxJsxAttribute',
-          value: path.extname(fileAbsPath).replace('.', ''),
+          value: getLangByExtension(path.extname(fileAbsPath).replace('.', '')),
         },
         {
           name: '__lineStart',
@@ -185,4 +185,12 @@ export function codeImport(options: Options = { filepath: '' }) {
       attrsList.set(attrId, newAttrs);
     });
   };
+}
+
+function getLangByExtension(extension: string) {
+  // TODO: Add more languages
+  // write someting nice
+  if (extension === 'sw') {
+    return 'rust'
+  }
 }
