@@ -18,7 +18,6 @@ function convert_guide_to_mdx() {
   local filenames=()
   local headings=()
 
-
   # Create the docs output directory if it doesn't exist
   if [ -d "$docs_dir" ]; then
     rm -rf "$docs_dir"
@@ -31,7 +30,7 @@ function convert_guide_to_mdx() {
   fi
   mkdir -p "$examples_dir"
 
-  cp -v "$examples_input_dir"/* "$examples_dir"/
+  cp -Rv "$examples_input_dir"/ "$examples_dir"
 
   # Loop through each line in the input file
   while read line; do
