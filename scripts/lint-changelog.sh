@@ -13,13 +13,14 @@ function get_lines() {
 
 function check_item() {
     log "--- ${current_line_num} item: ${line}"
-    items_amount=$(expr $items_amount + 1)
+    items_amount=$(("$items_amount" + 1))
     
     # check per item not per block
     local docs_found=false
     local example_found=false
     local next_item_found=false
-    local item_body_line_num=$(expr $current_line_num + 1)
+    local item_body_line_num
+    item_body_line_num=$(("$current_line_num" + 1))
     
     
     while [[ $next_item_found == false ]]; do
@@ -42,7 +43,7 @@ function check_item() {
             next_item_found=true
         fi
         
-        item_body_line_num=$(expr $item_body_line_num + 1)
+        item_body_line_num=$(("$item_body_line_num" + 1))
     done
     
     if [[ "$docs_found" == false ]]; then
@@ -86,7 +87,7 @@ function check_block() {
         if [[ "$line" == "breaking changes:" ]]; then
             break
         fi
-        current_line_num=$(expr $current_line_num + 1)
+        current_line_num=$(("$current_line_num" + 1))
     done
     
     log ""
