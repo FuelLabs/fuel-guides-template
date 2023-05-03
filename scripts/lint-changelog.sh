@@ -12,39 +12,34 @@ function get_lines() {
 }
 
 function check_item() {
-    log "--- ${current_line_num} item: ${line}"
-    items_amount=$(("$items_amount" + 1))
-    
-    # check per item not per block
     local docs_found=false
     local example_found=false
-    local next_item_found=false
-    local item_body_line_num
-    item_body_line_num=$(("$current_line_num" + 1))
+    local item_body_line_num=$(("$current_line_num" + 1))
     
     
-    while [[ $next_item_found == false ]]; do
-        # check item body
+    
+    while [[ $item_body_line_num -lt $total_lines ]] ; do
         local item_body_line="${lines[$item_body_line_num]}"
-        log "----- ${item_body_line_num} item_body: ${item_body_line}"
-        
-        
-        if [[ "$item_body_line" =~ ^[[:space:]]*docs:[[:space:]]*.* ]]; then
-            log "#---- docs: ${item_body_line_num}: ${item_body_line}"
-            docs_found=true
-            
-            elif [[ "$item_body_line" =~ ^[[:space:]]*example:[[:space:]]*.* ]]; then
-            log "#---- example: ${item_body_line_num}: ${item_body_line}"
-            example_found=true
-            # loop below docs
-        fi
         
         if [[ "$item_body_line" =~ ^-.* ]]; then
-            next_item_found=true
+            break
+        fi
+        
+        if [[ "$item_body_line" =~ ^[[:space:]]*docs:[[:space:]]*.* ]]; then
+            log "----# ${item_body_line_num} docs: ${item_body_line}"
+            docs_found=true
+            
+            elif [[ "$item_body_line" =~ ^[[:space:]]*example?s?:[[:space:]]*.* ]]; then
+            log "----# ${item_body_line_num} example: ${item_body_line}"
+            
+            example_found=true
+        else
+            log "----- ${item_body_line_num} item_body: ${item_body_line}"
         fi
         
         item_body_line_num=$(("$item_body_line_num" + 1))
     done
+    
     
     if [[ "$docs_found" == false ]]; then
         log "⚠️ Missing docs for $line"
@@ -53,6 +48,7 @@ function check_item() {
         log "⚠️ Missing example for $line"
         exit 1
     fi
+    
 }
 
 
@@ -77,14 +73,19 @@ function check_block() {
         
         if [[ $line == "$block_name" ]]; then
             block_found=true
-            log "-- Found block at ${current_line_num}"
+            log "## $current_line_num found block $block_name"
+            log ""
         fi
         
-        if [[ "$line" =~ ^-.* ]]; then
+        if [[ $block_found == true && "$line" =~ ^-.* ]]; then
+            log "-- ${current_line_num} item: ${line}"
+            items_amount=$(("$items_amount" + 1))
             check_item
+            log ""
+            
         fi
         
-        if [[ "$line" == "breaking changes:" ]]; then
+        if [[ "$line" == "breaking changes:" &&  "$block_name" != "breaking changes:" ]]; then
             break
         fi
         current_line_num=$(("$current_line_num" + 1))
@@ -117,7 +118,7 @@ function linter() {
     get_lines "$raw_input"
     
     check_block  "new features:"
-    # check_block  "breaking changes:"
+    check_block  "breaking changes:"
     
     echo "$raw_input"
 }

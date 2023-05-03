@@ -14,14 +14,16 @@ new features:
 
 - continous fun service 🥳
 
+    docs: https://gh.gh.gh
+
+    example:
+
 breaking changes:
 - a
+    docs:
+    examples:
+
 - b
-- c
-- d
-- e
-- f
-- g
-- h
-- i
-- j
+    docs:
+    examples:
+    
