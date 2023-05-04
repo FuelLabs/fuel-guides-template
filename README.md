@@ -1,30 +1,57 @@
-# Fuel-guides-template
-		# run from parent
-		chmod +x ./guide/generate-docs.sh
-		./guide/generate-docs.sh ./README.md ./guide		
+# Fuel Journey
 
-		
+To run the repo locally, clone the repo with the `--recursive` flag to also clone the submodules.
 
-TODO: add desc for generate-docs
+## Local Setup
 
+```
+git clone --recursive https://github.com/FuelLabs/fuel-journey
+```
 
-# How to
+Then you can install the dependencies and run it with
 
-### Secrets url: 
-	github.com/$user/$repo/settings/secrets/actions
+```
+npm install
+npm run dev
+```
 
-1. Add VERCEL_ORG_ID secret
+## Contributing
 
-		Your "Org ID" is also called your user ID, and it's found at vercel.com/account > settings > general -- at the bottom
+All of the main content lives in the `journey` folder. You can pull in content from other repos by adding them as a submodule.
 
-2. Add VERCEL_PROJECT_ID secret
+To import text from a `.md` file (for example, from one of the mdbooks), you can use the `MDXImport` component as shown below:
 
-		Your "Project ID" is found at vercel.com/dashboard > your project name > settings > general -- at the bottom	
+```jsx
+<MDXImport
+file="../../path/to/index.md"
+comment="fuelup"
+/>
+```
 
-3. Add generate-docs.yaml action
+This will pull in the text in between matching comments like this:
 
-4. Add submodule into repository root 
-			
-		git submodule add git@github.com:cold-briu/fuel-guides-template.git 
+```
+<!-- This example should include a summary of fuelup -->
+<!-- fuelup:example:start -->
+CONTENT
+<!-- fuelup:example:end -->
+```
 
-3. push
+The first comment can be anything, it just should explain the purpose of this content snippet.
+
+To pull in code, you can use the `CodeImport` component.
+
+```jsx
+<CodeImport
+file="../../path/to/index.md"
+comment="install"
+commentType="<!--"
+lang="shell"
+trim="true"
+/>
+```
+
+The `comment` prop is the name of the comment that comes before `:example:start` and `:example:end`.
+The `commentType` prop is the comment syntax used in the file. It can be either `<!--`, `{/*`, or `//`.
+The `lang` prop is used to format the code.
+The `trim` prop removes the 1st and last lines of the example. 

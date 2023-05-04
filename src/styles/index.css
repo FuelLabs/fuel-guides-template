@@ -4,6 +4,7 @@
   font-weight: 300 900;
   font-style: normal;
 }
+
 @font-face {
   font-family: "Calling Code";
   src: url("../../public/fonts/callingcode.woff2") format("woff2");
@@ -37,25 +38,30 @@ h6 {
 }
 
 *:focus-visible:not(input) {
-  outline: 2px solid #00F58C;
+  outline: 2px solid #03c399;
   border-radius: 5px;
 }
 
 a {
-  color: #00F58C;
+  color: #03c399;
   text-decoration: none;
 }
 
-h1 > a, h2 > a {
+h1>a,
+h2>a,
+h3>a,
+h4>a,
+h5>a,
+h6>a {
   color: var(--colors-gray12);
 }
 
-tr > th {
+tr>th {
   text-align: left;
 }
 
-tr > th,
-tr > td {
+tr>th,
+tr>td {
   padding: 0 20px 0 0;
 }
 
@@ -67,4 +73,59 @@ code {
 
 .fuel_logo {
   width: 40px;
+}
+
+[type="radio"]:checked,
+[type="radio"]:not(:checked) {
+  position: absolute;
+  left: -9999px;
+}
+
+[type="radio"]:checked+label,
+[type="radio"]:not(:checked)+label {
+  position: relative;
+  padding-left: 28px;
+  cursor: pointer;
+  line-height: 20px;
+  display: inline-block;
+  color: #666;
+}
+
+[type="radio"]:checked+label:before,
+[type="radio"]:not(:checked)+label:before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 18px;
+  height: 18px;
+  border: 1px solid var(--colors-gray4);
+  border-radius: 100%;
+  background: var(--colors-gray4);
+}
+
+[type="radio"]:checked+label:after,
+[type="radio"]:not(:checked)+label:after {
+  content: '';
+  width: 12px;
+  height: 12px;
+  background: var(--colors-accent11);
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  border-radius: 100%;
+  -webkit-transition: all 0.2s ease;
+  transition: all 0.2s ease;
+}
+
+[type="radio"]:not(:checked)+label:after {
+  opacity: 0;
+  -webkit-transform: scale(0);
+  transform: scale(0);
+}
+
+[type="radio"]:checked+label:after {
+  opacity: 1;
+  -webkit-transform: scale(1);
+  transform: scale(1);
 }

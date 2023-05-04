@@ -7,7 +7,7 @@ import { usePathname } from 'next/navigation';
 import { MobileMenu } from './MobileMenu';
 import { Search } from './Search';
 
-import { HEADER_TITLE } from '~/src/constants';
+import { HEADER_TITLE, URL } from '~/src/constants';
 
 
 export function Header() {
@@ -18,20 +18,16 @@ export function Header() {
     <Flex as="header" css={styles.root}>
       <Box css={{ flex: 1 }}>
         <Link href="/" className="logo">
-          {/* <FuelLogo size={40} /> */}
           <Image alt="Fuel Logo" src="/Fuel_Logo.png" height={30} width={30} />
           <Flex css={styles.logoText}>
             <span>{HEADER_TITLE}</span>
-            {/* <Box as="span" css={styles.version}>
-              alpha
-            </Box> */}
           </Flex>
         </Link>
       </Box>
       <Box css={styles.desktop}>
         <Flex css={styles.menu}>
           <a
-            href="https://github.com/FuelLabs/fuel-graphql-docs"
+            href={URL}
             target="_blank"
             rel="noreferrer"
           >

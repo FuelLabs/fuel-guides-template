@@ -11,7 +11,7 @@ import { mdxImport } from './mdx-import';
 import { codeExamples } from './code-examples';
 import { rehypeExtractHeadings } from './toc';
 
-import { DOCS_REPO_LINK, FIELDS, SUB_MENU_ORDER, DOCS_DIRECTORY, LABELS, DOCS_PATH_NAME, DOCS_PATH } from '~/src/constants';
+import { DOCS_REPO_LINK, FIELDS, SUB_MENU_ORDER, DOCS_DIRECTORY, LABELS, DOCS_FOLDER_NAME, DOCS_PATH } from '~/src/constants';
 import type { DocType, NodeHeading, SidebarLinkItem } from '~/src/types';
 
 
@@ -40,7 +40,7 @@ export async function getDocBySlug(
     fullpath.replace(process.cwd(), '')
   ).replace('https:/', 'https://');
 
-  let pageLink = tempPageLink.replace(`/${DOCS_PATH_NAME}/`, `/blob/main/${DOCS_PATH_NAME}/`)
+  let pageLink = tempPageLink.replace(`/${DOCS_FOLDER_NAME}/`, `/blob/main/${DOCS_FOLDER_NAME}/`)
 
   const doc = {
     pageLink,

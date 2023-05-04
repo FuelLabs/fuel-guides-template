@@ -54,14 +54,16 @@ const styles = {
   section: cssObj({
     py: '$4',
     px: '$4',
-
+    maxWidth: 'calc(100vw - $8)',
     '@md': {
       px: '$10',
+      maxWidth: 'calc(100vw - $20)',
     },
 
     '@xl': {
       py: '$8',
       px: '$0',
+      maxWidth: '60vw',
     },
   }),
 };
