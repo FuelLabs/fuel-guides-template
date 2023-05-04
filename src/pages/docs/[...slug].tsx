@@ -20,11 +20,12 @@ type Params = {
 };
 
 export async function getStaticProps({ params }: Params) {
-  const slug = (params.slug || DEFAULT_SLUG)?.join('/');
+  const slug = (params.slug ?? DEFAULT_SLUG)?.join('/');
   const doc = await getDocBySlug(slug, FIELDS);
   const links = await getSidebarLinks(MENU_ORDER);
+
   const docLink = links
-    .flatMap((i) => (i.submenu || i) as SidebarLinkItem | SidebarLinkItem[])
+    .flatMap((i) => (i.submenu ?? i) as SidebarLinkItem | SidebarLinkItem[])
     .find((i) => i.slug === doc.slug);
 
   return {
@@ -41,7 +42,7 @@ export async function getStaticPaths() {
     paths: docs.map((doc) => {
       return {
         params: {
-          slug: [...(doc.slug || '').split('/')],
+          slug: [...(doc.slug ?? '').split('/')],
         },
       };
     }),

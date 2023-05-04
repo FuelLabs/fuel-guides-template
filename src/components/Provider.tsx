@@ -11,6 +11,8 @@ import * as Examples from '~/examples';
 import { Blockquote } from './Blockquote';
 import { Code } from './Code';
 import { CodeImport } from './CodeImport';
+import { MDBookImport } from './MDBookImport';
+import { MDXImport } from './MDXImport';
 import { CodeExamples } from './CodeExamples';
 import { Heading } from './Heading';
 import { Link } from './Link';
@@ -19,6 +21,12 @@ import { Paragraph } from './Paragraph';
 import Player from './Player';
 import { Pre } from './Pre';
 import { Table } from './Table';
+import CourseCards from './CourseCards';
+import Task from './Task';
+import Quiz from './Quiz';
+import QuizMultipleChoice from './QuizMultipleChoice';
+import TweetButton from './TweetButton';
+import Image from 'next/image';
 
 const components = {
   a: Link,
@@ -35,7 +43,15 @@ const components = {
   table: Table,
   ul: UL,
   CodeImport,
+  MDBookImport,
+  MDXImport,
   Player,
+  CourseCards,
+  Task,
+  Quiz,
+  QuizMultipleChoice,
+  TweetButton,
+  Image,
   Examples,
   CodeExamples
 };

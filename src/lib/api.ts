@@ -7,16 +7,19 @@ import remarkGfm from 'remark-gfm';
 import remarkSlug from 'remark-slug';
 
 import { codeImport } from './code-import';
+import { mdxImport } from './mdx-import';
 import { codeExamples } from './code-examples';
 import { rehypeExtractHeadings } from './toc';
 
-import { DOCS_REPO_LINK, FIELDS, SUB_MENU_ORDER, DOCS_DIRECTORY, MENU_ORDER, LABELS } from '~/src/constants';
+import { DOCS_REPO_LINK, FIELDS, SUB_MENU_ORDER, DOCS_DIRECTORY, LABELS, DOCS_PATH_NAME, DOCS_PATH } from '~/src/constants';
 import type { DocType, NodeHeading, SidebarLinkItem } from '~/src/types';
 
 
+
 export async function getDocsSlugs() {
-  const paths = await globby(['**.mdx']);
-  return paths.map((item) => item.replace('docs/', ''));
+  const paths = await globby([`${DOCS_PATH}/**.mdx`, `${DOCS_PATH}/*/**.mdx`]);
+  return paths.map((item) => item.replace(`${DOCS_PATH}/`, ''));
+
 }
 
 export function getDocFullPath(slug: string) {
@@ -37,7 +40,7 @@ export async function getDocBySlug(
     fullpath.replace(process.cwd(), '')
   ).replace('https:/', 'https://');
 
-  let pageLink = tempPageLink.replace("/docs/", "/blob/main/docs/")
+  let pageLink = tempPageLink.replace(`/${DOCS_PATH_NAME}/`, `/blob/main/${DOCS_PATH_NAME}/`)
 
   const doc = {
     pageLink,
@@ -65,6 +68,7 @@ export async function getDocBySlug(
         remarkSlug,
         remarkGfm,
         [codeImport, { filepath: fullpath }],
+        [mdxImport, { filepath: fullpath }],
         [codeExamples, { filepath: fullpath }],
       ],
       rehypePlugins: [[rehypeExtractHeadings, { headings }]],
@@ -79,6 +83,8 @@ export async function getDocBySlug(
 }
 
 export async function getAllDocs(fields: string[] = []) {
+
+  // TODO: better catching
   const slugs = await getDocsSlugs();
   return Promise.all(slugs.map((slug) => getDocBySlug(slug, fields)));
 }
@@ -101,14 +107,15 @@ export async function getSidebarLinks(order: string[]) {
     }
     const categorySlug = doc.slug.split('/')[0];
     const submenu = [{ slug: doc.slug, label: doc.title }];
-    return list.concat({
+    let contatenatedList = list.concat({
       subpath: categorySlug,
       label: doc.category,
       submenu,
     });
+
+    return contatenatedList
     /** Insert inside category submenu if category is already on array */
   }, [] as SidebarLinkItem[]);
-
   // TODO: how to order dynamically
 
   const sortedLinks = links

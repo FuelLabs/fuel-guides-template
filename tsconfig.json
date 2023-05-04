@@ -3,19 +3,31 @@
     "allowJs": true,
     "jsx": "preserve",
     "incremental": true,
-    "plugins": [{ "name": "next" }],
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
     "noEmit": true,
     "isolatedModules": true,
     "baseUrl": ".",
     "paths": {
-      "~/*": ["./*"]
+      "~/*": [
+        "./*"
+      ],
+      "#/*": [
+        "../*"
+      ]
     },
     "allowSyntheticDefaultImports": true,
     "downlevelIteration": true,
     "preserveSymlinks": false,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
-    "lib": ["dom", "esnext"],
+    "lib": [
+      "dom",
+      "esnext"
+    ],
     "module": "esnext",
     "moduleResolution": "node",
     "noFallthroughCasesInSwitch": true,
@@ -30,6 +42,16 @@
     "suppressImplicitAnyIndexErrors": true,
     "target": "es2020"
   },
-  "exclude": ["**/dist", "**/build", "node_modules", "**/node_modules"],
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"]
+  "exclude": [
+    "**/dist",
+    "**/build",
+    "node_modules",
+    "**/node_modules"
+  ],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts"
+  ]
 }
