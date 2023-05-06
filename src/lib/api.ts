@@ -11,36 +11,45 @@ import { mdxImport } from './mdx-import';
 import { codeExamples } from './code-examples';
 import { rehypeExtractHeadings } from './toc';
 
-import { DOCS_REPO_LINK, FIELDS, SUB_MENU_ORDER, DOCS_DIRECTORY, LABELS, DOCS_FOLDER_NAME, DOCS_PATH } from '~/src/constants';
+import {
+  DOCS_PATH,
+  DOCS_DIRECTORY,
+  DOCS_FOLDER_NAME,
+  DOCS_REPO_LINK,
+  FIELDS,
+  FUEL_101_MENU,
+  TOOLCHAIN_MENU,
+  GRAPHQL_MENU,
+  SWAY_MENU,
+  RUST_MENU,
+  FRONTEND_MENU,
+  INDEXER_MENU
+} from '~/src/constants';
+
 import type { DocType, NodeHeading, SidebarLinkItem } from '~/src/types';
-
-
 
 export async function getDocsSlugs() {
   const paths = await globby([`${DOCS_PATH}/**.mdx`, `${DOCS_PATH}/*/**.mdx`]);
   return paths.map((item) => item.replace(`${DOCS_PATH}/`, ''));
-
 }
 
 export function getDocFullPath(slug: string) {
   const realSlug = slug.replace(/\.mdx$/, '');
-  return join(DOCS_DIRECTORY, `${realSlug}.mdx`);
+  const fullpath = join(DOCS_DIRECTORY, `${realSlug}.mdx`);
+  return { fullpath, realSlug }
 }
 
 export async function getDocBySlug(
   slug: string,
   fields: string[] = []
 ): Promise<DocType> {
-  const realSlug = slug.replace(/\.mdx$/, '');
-  const fullpath = getDocFullPath(slug);
+  const { fullpath, realSlug } = getDocFullPath(slug);
   const fileContents = fs.readFileSync(fullpath, 'utf8');
   const { data, content } = matter(fileContents);
-  const tempPageLink = join(
+  const pageLink = join(
     DOCS_REPO_LINK,
-    fullpath.replace(process.cwd(), '')
+    fullpath.replace(DOCS_DIRECTORY, `/blob/main/${DOCS_FOLDER_NAME}/`)
   ).replace('https:/', 'https://');
-
-  let pageLink = tempPageLink.replace(`/${DOCS_FOLDER_NAME}/`, `/blob/main/${DOCS_FOLDER_NAME}/`)
 
   const doc = {
     pageLink,
@@ -60,20 +69,26 @@ export async function getDocBySlug(
   });
 
   const headings: NodeHeading[] = [];
-  const source = await serialize(content, {
-    scope: data,
-    mdxOptions: {
-      format: 'mdx',
-      remarkPlugins: [
-        remarkSlug,
-        remarkGfm,
-        [codeImport, { filepath: fullpath }],
-        [mdxImport, { filepath: fullpath }],
-        [codeExamples, { filepath: fullpath }],
-      ],
-      rehypePlugins: [[rehypeExtractHeadings, { headings }]],
-    },
-  });
+  let source = null
+
+  try {
+    source = await serialize(content, {
+      scope: data,
+      mdxOptions: {
+        format: 'mdx',
+        remarkPlugins: [
+          remarkSlug,
+          remarkGfm,
+          [codeImport, { filepath: fullpath }],
+          [mdxImport, { filepath: fullpath }],
+          [codeExamples, { filepath: fullpath }],
+        ],
+        rehypePlugins: [[rehypeExtractHeadings, { headings }]],
+      },
+    });
+  } catch (error) {
+    throw new Error(`Error serializing ${slug}:\n${error}`);
+  }
 
   return {
     ...doc,
@@ -83,8 +98,6 @@ export async function getDocBySlug(
 }
 
 export async function getAllDocs(fields: string[] = []) {
-
-  // TODO: better catching
   const slugs = await getDocsSlugs();
   return Promise.all(slugs.map((slug) => getDocBySlug(slug, fields)));
 }
@@ -107,16 +120,13 @@ export async function getSidebarLinks(order: string[]) {
     }
     const categorySlug = doc.slug.split('/')[0];
     const submenu = [{ slug: doc.slug, label: doc.title }];
-    let contatenatedList = list.concat({
+    return list.concat({
       subpath: categorySlug,
       label: doc.category,
       submenu,
     });
-
-    return contatenatedList
     /** Insert inside category submenu if category is already on array */
   }, [] as SidebarLinkItem[]);
-  // TODO: how to order dynamically
 
   const sortedLinks = links
     /** Sort first level links */
@@ -136,11 +146,35 @@ export async function getSidebarLinks(order: string[]) {
       const idx = order.indexOf(first);
       return a.subpath ? idx - bIdx : aIdx - idx;
     })
-    // /** Sort categoried links */
+    /** Sort categoried links */
     .map((link) => {
       if (!link.submenu) return link;
-      // TODO:  refactor to use a switch approach where handleOrder[link.label]
-      const catOrder = link.label == LABELS.REFERENCE ? SUB_MENU_ORDER.REFERENCE : SUB_MENU_ORDER.HOW_TO_USE_GRAPHQL
+      let catOrder: string[] = [];
+      switch (link.label) {
+        case "Fuel 101":
+          catOrder = FUEL_101_MENU
+          break;
+        case "GraphQL API":
+          catOrder = GRAPHQL_MENU
+          break;
+        case "The Fuel Toolchain":
+          catOrder = TOOLCHAIN_MENU
+          break;
+        case "Building a Sway Contract":
+          catOrder = SWAY_MENU
+          break;
+        case "Testing with Rust":
+          catOrder = RUST_MENU
+          break;
+        case "Making a Frontend":
+          catOrder = FRONTEND_MENU
+          break;
+        case "Building an Indexer":
+          catOrder = INDEXER_MENU
+          break;
+        default:
+      }
+
       const submenu = link.submenu
         .sort(
           (a, b) => {

@@ -7,10 +7,8 @@ import { EOL } from 'os';
 import path from 'path';
 import * as prettier from 'prettier';
 import type { Root } from 'remark-gfm';
-import { visit, Parent } from 'unist-util-visit';
-
-// FIXME: use dynamic imports:: implemented as ~/*
-const ROOT_DIR = path.resolve(__dirname, '../../../../../../../');
+import { visit } from 'unist-util-visit';
+import type { Parent } from 'unist-util-visit';
 
 function toAST(content: string) {
   return acorn.parse(content, {
@@ -22,7 +20,8 @@ function toAST(content: string) {
 function extractLines(
   content: string,
   fromLine: number | undefined,
-  toLine: number | undefined
+  toLine: number | undefined,
+  linesIncluded: number[]
 ) {
   const lines = content.split(EOL);
   const start = fromLine || 1;
@@ -34,8 +33,52 @@ function extractLines(
   } else {
     end = lines.length;
   }
-  // TODO: Prettify return prettier.format(linesContent, { parser: 'babel-ts' }).trimEnd();
-  return lines.slice(start - 1, end).join('\n');
+  if (linesIncluded.length > 0) {
+    let newLines = linesIncluded.map((line) => line - start)
+    return lines.slice(start - 1, end).filter((line, index) => newLines.includes(index)).join('\n');
+  } else {
+    return lines.slice(start - 1, end).join('\n');
+  }
+
+}
+
+type CommentTypes = '<!--' | '{/*' | '//';
+
+function extractCommentBlock(content: string, comment: string, commentType: CommentTypes, trim: string) {
+  const lines = content.split(EOL);
+  let commentStart = `// ${comment}:example:start`;
+  let commentEnd = `// ${comment}:example:end`;
+
+  if (commentType == '<!--') {
+    commentStart = `<!-- ${comment}:example:start -->`;
+    commentEnd = `<!-- ${comment}:example:end -->`;
+  } else if (commentType == '{/*') {
+    commentStart = `{/* ${comment}:example:start */}`;
+    commentEnd = `{/* ${comment}:example:end */}`;
+  }
+
+  let lineStart = lines.findIndex((l) => l.includes(commentStart)) + 1;
+  let lineEnd = lines.findIndex((l) => l.includes(commentEnd));
+
+  if (trim === "true") {
+    lineStart = lineStart + 1;
+    lineEnd = lineEnd - 1;
+  }
+
+  if (lineStart < 0) {
+    lineStart = 0;
+  }
+  if (lineEnd < 0) {
+    lineEnd = lines.length;
+  }
+
+  const linesContent = lines.slice(lineStart, lineEnd).join('\n');
+
+  return {
+    content: linesContent,
+    lineStart,
+    lineEnd,
+  };
 }
 
 function getLineOffsets(str: string) {
@@ -116,19 +159,27 @@ export function codeImport(options: Options = { filepath: '' }) {
         throw new Error('CodeImport need to have properties defined');
       }
 
-      // FIXME: Improve undef handling
-
+      const file = attr.find((i: any) => i.name === 'file')?.value;
       let lineStart = attr.find((i: any) => i.name === 'lineStart')?.value;
       let lineEnd = attr.find((i: any) => i.name === 'lineEnd')?.value;
-      const file = attr.find((i: any) => i.name === 'file')?.value;
+      let comment = attr.find((i: any) => i.name === 'comment')?.value;
+      let commentType = attr.find((i: any) => i.name === 'commentType')?.value;
+      let trim = attr.find((i: any) => i.name === 'trim')?.value;
+      let linesIncluded = attr.find((i: any) => i.name === 'linesIncluded')?.value || [];
       const testCase = attr.find((i: any) => i.name === 'testCase')?.value;
       const fileAbsPath = path.resolve(path.join(rootDir, dirname), file);
+      let lang = attr.find((i: any) => i.name === 'lang')?.value || path.extname(fileAbsPath).replace('.', '');
       const fileContent = fs.readFileSync(fileAbsPath, 'utf8');
       const cachedFile = getFilesOnCache(fileAbsPath);
-      const attrId = `${fileAbsPath}${testCase || ''}${lineStart || ''}${lineEnd || ''}`;
+      const attrId = `${fileAbsPath}${lineStart || ""}${lineEnd || ""}${comment || ""
+        }`;
       const oldList = attrsList.get(attrId);
+      let resp = Array.isArray(linesIncluded) ? 0 : linesIncluded;
+      if (resp !== 0) {
+        linesIncluded = JSON.parse(linesIncluded.value);
+      }
 
-      // FIXME: test cache earlier
+
       /** Return result from cache if file content is the same */
       if (fileContent === cachedFile && oldList) {
         node.attributes.push(...attrsList.get(attrId)!);
@@ -136,7 +187,14 @@ export function codeImport(options: Options = { filepath: '' }) {
       }
 
       if (lineStart || lineEnd) {
-        content = extractLines(fileContent, lineStart, lineEnd);
+        if (!lineStart) lineStart = 1;
+        if (!lineEnd) lineEnd = 1;
+        content = extractLines(fileContent, lineStart, lineEnd, linesIncluded);
+      } else if (comment) {
+        const commentResult = extractCommentBlock(fileContent, comment, commentType, trim);
+        lineStart = commentResult.lineStart;
+        lineEnd = commentResult.lineEnd;
+        content = commentResult.content;
       }
 
       if (testCase) {
@@ -155,7 +213,7 @@ export function codeImport(options: Options = { filepath: '' }) {
         {
           name: '__filepath',
           type: 'mdxJsxAttribute',
-          value: path.resolve(dirname, file).replace(`${ROOT_DIR}/`, ''),
+          value: path.resolve(dirname, file),
         },
         {
           name: '__filename',
@@ -165,7 +223,7 @@ export function codeImport(options: Options = { filepath: '' }) {
         {
           name: '__language',
           type: 'mdxJsxAttribute',
-          value: getLangByExtension(path.extname(fileAbsPath).replace('.', '')),
+          value: lang,
         },
         {
           name: '__lineStart',
@@ -185,12 +243,4 @@ export function codeImport(options: Options = { filepath: '' }) {
       attrsList.set(attrId, newAttrs);
     });
   };
-}
-
-function getLangByExtension(extension: string) {
-  // TODO: Add more languages
-  // write someting nice
-  if (extension === 'sw') {
-    return 'rust'
-  }
 }

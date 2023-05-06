@@ -123,11 +123,9 @@ export function mdxImport(options: Options = { filepath: "" }) {
         node.attributes.push(...attrsList.get(attrId)!);
         return;
       }
-
       if (lineStart || lineEnd) {
         if (!lineStart) lineStart = 1;
         if (!lineEnd) lineEnd = 1;
-
         content = extractLines(fileContent, lineStart, lineEnd, linesIncluded);
       } else if (comment) {
         const commentResult = extractCommentBlock(fileContent, comment);

@@ -107,5 +107,5 @@ export const META_OGIMG = URL + ogImage.src;
 export const HEADER_TITLE = 'Fuel Journey'
 
 export const DOCS_FOLDER_NAME = 'journey'
-export const DOCS_PATH = `../${DOCS_FOLDER_NAME}`
+export const DOCS_PATH = `../fuel-journey/${DOCS_FOLDER_NAME}`
 export const DOCS_DIRECTORY = join(process.cwd(), DOCS_PATH);

@@ -5,11 +5,15 @@ import { Pre } from './Pre';
 
 import { REPO_LINK } from '~/src/constants';
 
+
 export type CodeImportProps = {
   file: string;
-  lines?: number[];
+  lineStart: number,
+  lineEnd: number,
+  linesIncluded?: number[];
   testCase?: string;
   title?: string;
+  lang?: string;
   __content: string;
   __filepath: string;
   __filename: string;
@@ -36,7 +40,7 @@ export function CodeImport({
     </>
   );
   return (
-    <Pre title={title}>
+    <Pre title={filename.split('.')[1] !== "mdx" && filename.split('.')[1] !== "md" && title}>
       <code className={`language-${language}`}>{content}</code>
     </Pre>
   );

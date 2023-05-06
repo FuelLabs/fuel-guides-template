@@ -22,6 +22,7 @@ type Params = {
 export async function getStaticProps({ params }: Params) {
   const slug = (params.slug || DEFAULT_SLUG)?.join('/');
   const doc = await getDocBySlug(slug, FIELDS);
+  // console.log('getStaticProps', { slug, doc });
   const links = await getSidebarLinks(MENU_ORDER);
   const docLink = links
     .flatMap((i) => (i.submenu || i) as SidebarLinkItem | SidebarLinkItem[])
