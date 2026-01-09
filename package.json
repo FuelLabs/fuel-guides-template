@@ -22,7 +22,7 @@
     "acorn-walk": "^8.2.0",
     "dotenv": "^16.0.3",
     "framer-motion": "^7.6.15",
-    "fuels": "0.22.1",
+    "fuels": "0.102.0",
     "globby": "^13.1.2",
     "graphql": "^16.6.0",
     "gray-matter": "^4.0.3",
